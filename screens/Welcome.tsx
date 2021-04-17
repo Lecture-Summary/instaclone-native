@@ -4,6 +4,8 @@ import { TouchableOpacity } from 'react-native'
 import { LoggedOutNavParamList } from '../navigators/navigators'
 import styled from 'styled-components/native'
 import { colors } from '../colors'
+import AuthLayout from '../components/auth/AuthLayout'
+import Authbutton from '../components/auth/Authbutton'
 
 type WelcomeScreenNavigationProp = StackNavigationProp<
   LoggedOutNavParamList,
@@ -13,19 +15,6 @@ type WelcomeScreenNavigationProp = StackNavigationProp<
 interface IProps {
   navigation: WelcomeScreenNavigationProp
 }
-
-const Container = styled.View`
-  flex: 1;
-  align-items: center;
-  justify-content: center;
-  background-color: black;
-  padding: 0px 40px;
-`
-
-const Logo = styled.Image`
-  max-width: 50%;
-  height: 100px;
-`
 
 const CreateAccount = styled.TouchableOpacity`
   background-color: ${colors.blue};
@@ -52,15 +41,16 @@ const Welcome: VFC<IProps> = ({ navigation }) => {
   const goToLogIn = () => navigation.navigate('LogIn')
 
   return (
-    <Container>
-      <Logo resizeMode='contain' source={require('../assets/logo.png')} />
-      <CreateAccount disabled={false} onPress={goToCreateAccount}>
-        <CreateAccountText>Create New Account</CreateAccountText>
-      </CreateAccount>
+    <AuthLayout>
+      <Authbutton
+        text='Create New Account'
+        disabled={false}
+        onPress={goToCreateAccount}
+      />
       <TouchableOpacity onPress={goToLogIn}>
         <LoginLink>Log In</LoginLink>
       </TouchableOpacity>
-    </Container>
+    </AuthLayout>
   )
 }
 
