@@ -1,7 +1,9 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { VFC } from 'react'
 import { Text, View } from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { TextInput, TouchableOpacity } from 'react-native-gesture-handler'
+import AuthLayout from '../components/auth/AuthLayout'
+import { Input } from '../components/auth/AuthShared'
 import { LoggedOutNavParamList } from '../navigators/navigators'
 
 type LogInScreenNavigationProp = StackNavigationProp<
@@ -15,12 +17,20 @@ interface IProps {
 
 const LogIn: VFC<IProps> = ({ navigation }) => {
   return (
-    <View>
-      <Text>LogIn</Text>
-      <TouchableOpacity onPress={() => navigation.navigate('CreateAccount')}>
-        <Text>Go to Create Account</Text>
-      </TouchableOpacity>
-    </View>
+    <AuthLayout>
+      <Input
+        placeholder='Username'
+        placeholderTextColor='rgba(255, 255, 255, 0.8)'
+        returnKeyType='next'
+      />
+      <Input
+        placeholder='Password'
+        placeholderTextColor='rgba(255, 255, 255, 0.8)'
+        secureTextEntry
+        returnKeyType='done'
+        lastOne={true}
+      />
+    </AuthLayout>
   )
 }
 
