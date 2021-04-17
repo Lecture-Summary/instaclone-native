@@ -5,6 +5,8 @@ import { StyleSheet, Text, View } from 'react-native'
 import * as Font from 'expo-font'
 import AppLoading from 'expo-app-loading'
 import { Asset } from 'expo-asset'
+import LoggedOutNav from './navigators/LoggedOutNav'
+import { NavigationContainer } from '@react-navigation/native'
 
 export default function App() {
   const [loading, setLoading] = useState(false)
@@ -29,10 +31,9 @@ export default function App() {
     )
   }
   return (
-    <View style={styles.container}>
-      <Text>hi</Text>
-      <StatusBar style='auto' />
-    </View>
+    <NavigationContainer>
+      <LoggedOutNav />
+    </NavigationContainer>
   )
 }
 
