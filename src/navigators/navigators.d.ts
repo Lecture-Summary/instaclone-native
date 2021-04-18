@@ -1,6 +1,6 @@
 export type LoggedOutNavParamList = {
   Welcome: undefined
-  LogIn: undefined
+  LogIn: { username?: string; password?: string }
   CreateAccount: undefined
 }
 

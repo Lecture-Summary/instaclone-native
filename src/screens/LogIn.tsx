@@ -1,4 +1,5 @@
 import { useMutation } from '@apollo/client'
+import { RouteProp } from '@react-navigation/core'
 import { StackNavigationProp } from '@react-navigation/stack'
 import gql from 'graphql-tag'
 import React, { useEffect, useRef, VFC } from 'react'
@@ -26,8 +27,11 @@ type LogInScreenNavigationProp = StackNavigationProp<
   'LogIn'
 >
 
+type LogInScreenRouteProp = RouteProp<LoggedOutNavParamList, 'LogIn'>
+
 interface IProps {
   navigation: LogInScreenNavigationProp
+  route: LogInScreenRouteProp
 }
 
 interface IForm {
@@ -35,8 +39,13 @@ interface IForm {
   password: string
 }
 
-const LogIn: VFC<IProps> = ({ navigation }) => {
-  const { register, handleSubmit, setValue, watch } = useForm()
+const LogIn: VFC<IProps> = ({ navigation, route: { params } }) => {
+  const { register, handleSubmit, setValue, watch } = useForm({
+    defaultValues: {
+      password: params?.password,
+      username: params?.username,
+    },
+  })
 
   const passwordRef = useRef<TextInput>(null)
 
@@ -73,6 +82,7 @@ const LogIn: VFC<IProps> = ({ navigation }) => {
   return (
     <AuthLayout>
       <Input
+        value={watch('username')}
         placeholder='Username'
         placeholderTextColor='rgba(255, 255, 255, 0.8)'
         autoCapitalize='none'
@@ -81,6 +91,7 @@ const LogIn: VFC<IProps> = ({ navigation }) => {
         onChangeText={(text) => setValue('username', text)}
       />
       <Input
+        value={watch('password')}
         //@ts-ignore
         ref={passwordRef}
         placeholder='Password'

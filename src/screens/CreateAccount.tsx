@@ -1,9 +1,38 @@
-import React, { useEffect, useRef } from 'react'
+import { useMutation } from '@apollo/client'
+import { StackNavigationProp } from '@react-navigation/stack'
+import gql from 'graphql-tag'
+import React, { useEffect, useRef, VFC } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { TextInput } from 'react-native'
 import AuthButton from '../components/auth/AuthButton'
 import AuthLayout from '../components/auth/AuthLayout'
 import { Input } from '../components/auth/AuthShared'
+import { LoggedOutNavParamList } from '../navigators/navigators'
+import {
+  createAccount,
+  createAccountVariables,
+} from '../__generated__/createAccount'
+
+const CREATE_ACCOUNT_MUTATION = gql`
+  mutation createAccount(
+    $email: String!
+    $firstName: String!
+    $lastName: String
+    $password: String!
+    $username: String!
+  ) {
+    createAccount(
+      email: $email
+      firstName: $firstName
+      lastName: $lastName
+      password: $password
+      username: $username
+    ) {
+      ok
+      error
+    }
+  }
+`
 
 interface IForm {
   firstName: string
@@ -13,8 +42,32 @@ interface IForm {
   password: string
 }
 
-const CreateAccount = () => {
-  const { register, handleSubmit, setValue } = useForm<IForm>()
+type CreateAccountScreenNavigationProp = StackNavigationProp<
+  LoggedOutNavParamList,
+  'CreateAccount'
+>
+
+interface IProps {
+  navigation: CreateAccountScreenNavigationProp
+}
+
+const CreateAccount: VFC<IProps> = ({ navigation }) => {
+  const { register, handleSubmit, setValue, getValues } = useForm<IForm>()
+
+  const onCompleted = (data: createAccount) => {
+    const {
+      createAccount: { ok },
+    } = data
+    const { username, password } = getValues()
+    if (ok) {
+      navigation.navigate('LogIn', { username, password })
+    }
+  }
+
+  const [createAccountMutation, { loading }] = useMutation<
+    createAccount,
+    createAccountVariables
+  >(CREATE_ACCOUNT_MUTATION, { onCompleted })
 
   const lastNameRef = useRef<TextInput>(null)
   const usernameRef = useRef<TextInput>(null)
@@ -34,7 +87,9 @@ const CreateAccount = () => {
   }
 
   const onValid: SubmitHandler<IForm> = (data) => {
-    console.log(data)
+    if (!loading) {
+      createAccountMutation({ variables: { ...data } })
+    }
   }
 
   return (
