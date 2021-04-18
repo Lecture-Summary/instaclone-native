@@ -1,11 +1,25 @@
+import { useMutation } from '@apollo/client'
 import { StackNavigationProp } from '@react-navigation/stack'
+import gql from 'graphql-tag'
 import React, { useEffect, useRef, VFC } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { TextInput } from 'react-native-gesture-handler'
+import { isLoggedInVar } from '../../apollo'
 import AuthButton from '../components/auth/AuthButton'
 import AuthLayout from '../components/auth/AuthLayout'
 import { Input } from '../components/auth/AuthShared'
 import { LoggedOutNavParamList } from '../navigators/navigators'
+import { login, loginVariables } from '../__generated__/login'
+
+const LOGIN_MUTATION = gql`
+  mutation login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      ok
+      token
+      error
+    }
+  }
+`
 
 type LogInScreenNavigationProp = StackNavigationProp<
   LoggedOutNavParamList,
@@ -22,9 +36,23 @@ interface IForm {
 }
 
 const LogIn: VFC<IProps> = ({ navigation }) => {
-  const { register, handleSubmit, setValue } = useForm()
+  const { register, handleSubmit, setValue, watch } = useForm()
 
   const passwordRef = useRef<TextInput>(null)
+
+  const onCompleted = (data: login) => {
+    const {
+      login: { ok, token },
+    } = data
+    if (ok) {
+      isLoggedInVar(true)
+    }
+  }
+
+  const [logInMutation, { loading }] = useMutation<login, loginVariables>(
+    LOGIN_MUTATION,
+    { onCompleted }
+  )
 
   useEffect(() => {
     register('username')
@@ -32,11 +60,14 @@ const LogIn: VFC<IProps> = ({ navigation }) => {
   }, [register])
 
   const onNext = (nextOne: React.RefObject<TextInput>) => {
+    //@ts-ignore
     nextOne.current?.focus()
   }
 
   const onValid: SubmitHandler<IForm> = (data) => {
-    console.log(data)
+    if (!loading) {
+      logInMutation({ variables: { ...data } })
+    }
   }
 
   return (
@@ -50,6 +81,7 @@ const LogIn: VFC<IProps> = ({ navigation }) => {
         onChangeText={(text) => setValue('username', text)}
       />
       <Input
+        //@ts-ignore
         ref={passwordRef}
         placeholder='Password'
         placeholderTextColor='rgba(255, 255, 255, 0.8)'
@@ -61,8 +93,8 @@ const LogIn: VFC<IProps> = ({ navigation }) => {
       />
       <AuthButton
         text='Log In'
-        disabled={false}
-        loading={false}
+        disabled={!watch('username') || !watch('password')}
+        loading={loading}
         onPress={handleSubmit(onValid)}
       />
     </AuthLayout>

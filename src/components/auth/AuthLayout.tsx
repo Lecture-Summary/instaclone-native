@@ -40,7 +40,7 @@ const AuthLayout: FC = ({ children }) => {
         >
           <Logo
             resizeMode='contain'
-            source={require('../../assets/logo.png')}
+            source={require('../../../assets/logo.png')}
           />
           {children}
         </KeyboardAvoidingView>

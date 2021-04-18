@@ -3,3 +3,7 @@ export type LoggedOutNavParamList = {
   LogIn: undefined
   CreateAccount: undefined
 }
+
+export type LoggedInNavParamList = {
+  Feed: undefined
+}

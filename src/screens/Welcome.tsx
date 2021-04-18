@@ -1,11 +1,11 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { VFC } from 'react'
 import { TouchableOpacity } from 'react-native'
-import { LoggedOutNavParamList } from '../navigators/navigators'
 import styled from 'styled-components/native'
-import { colors } from '../colors'
-import AuthLayout from '../components/auth/AuthLayout'
+import { colors } from '../../colors'
 import AuthButton from '../components/auth/AuthButton'
+import AuthLayout from '../components/auth/AuthLayout'
+import { LoggedOutNavParamList } from '../navigators/navigators'
 
 type WelcomeScreenNavigationProp = StackNavigationProp<
   LoggedOutNavParamList,
@@ -45,6 +45,7 @@ const Welcome: VFC<IProps> = ({ navigation }) => {
       <AuthButton
         text='Create New Account'
         disabled={false}
+        loading={false}
         onPress={goToCreateAccount}
       />
       <TouchableOpacity onPress={goToLogIn}>
