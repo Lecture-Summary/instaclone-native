@@ -6,6 +6,7 @@ import { LoggedInNavParamList } from './navigators'
 import Search from '../screens/Search'
 import Notifications from '../screens/Notifications'
 import Profile from '../screens/Profile'
+import TabIcon from '../components/nav/TabIcon'
 
 const Tabs = createBottomTabNavigator<LoggedInNavParamList>()
 
@@ -26,7 +27,7 @@ const LoggedInNav = () => {
         component={Feed}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name='home' color={color} size={focused ? 24 : 20} />
+            <TabIcon iconName='home' color={color} focused={focused} />
           ),
         }}
       />
@@ -35,7 +36,16 @@ const LoggedInNav = () => {
         component={Search}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name='search' color={color} size={focused ? 24 : 20} />
+            <TabIcon iconName='search' color={color} focused={focused} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name='Camera'
+        component={Search}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <TabIcon iconName='camera' color={color} focused={focused} />
           ),
         }}
       />
@@ -44,7 +54,7 @@ const LoggedInNav = () => {
         component={Notifications}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name='heart' color={color} size={focused ? 24 : 20} />
+            <TabIcon iconName='heart' color={color} focused={focused} />
           ),
         }}
       />
@@ -53,7 +63,7 @@ const LoggedInNav = () => {
         component={Profile}
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name='person' color={color} size={focused ? 24 : 20} />
+            <TabIcon iconName='person' color={color} focused={focused} />
           ),
         }}
       />
