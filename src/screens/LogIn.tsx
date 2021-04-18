@@ -92,7 +92,6 @@ const LogIn: VFC<IProps> = ({ navigation, route: { params } }) => {
       />
       <Input
         value={watch('password')}
-        //@ts-ignore
         ref={passwordRef}
         placeholder='Password'
         placeholderTextColor='rgba(255, 255, 255, 0.8)'

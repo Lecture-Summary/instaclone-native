@@ -102,7 +102,6 @@ const CreateAccount: VFC<IProps> = ({ navigation }) => {
         onChangeText={(text) => setValue('firstName', text)}
       />
       <Input
-        //@ts-ignore
         ref={lastNameRef}
         placeholder='Last Name'
         placeholderTextColor='rgba(255, 255, 255, 0.8)'
@@ -111,7 +110,6 @@ const CreateAccount: VFC<IProps> = ({ navigation }) => {
         onChangeText={(text) => setValue('lastName', text)}
       />
       <Input
-        //@ts-ignore
         ref={usernameRef}
         placeholder='Username'
         autoCapitalize='none'
@@ -121,7 +119,6 @@ const CreateAccount: VFC<IProps> = ({ navigation }) => {
         onChangeText={(text) => setValue('username', text)}
       />
       <Input
-        //@ts-ignore
         ref={emailRef}
         placeholder='Email'
         placeholderTextColor='rgba(255, 255, 255, 0.8)'
@@ -131,7 +128,6 @@ const CreateAccount: VFC<IProps> = ({ navigation }) => {
         onChangeText={(text) => setValue('email', text)}
       />
       <Input
-        //@ts-ignore
         ref={passwordRef}
         placeholder='Password'
         placeholderTextColor='rgba(255, 255, 255, 0.8)'
