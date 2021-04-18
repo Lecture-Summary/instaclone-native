@@ -5,7 +5,7 @@ import gql from 'graphql-tag'
 import React, { useEffect, useRef, VFC } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { TextInput } from 'react-native-gesture-handler'
-import { isLoggedInVar } from '../../apollo'
+import { isLoggedInVar, logUserIn } from '../../apollo'
 import AuthButton from '../components/auth/AuthButton'
 import AuthLayout from '../components/auth/AuthLayout'
 import { Input } from '../components/auth/AuthShared'
@@ -49,12 +49,12 @@ const LogIn: VFC<IProps> = ({ navigation, route: { params } }) => {
 
   const passwordRef = useRef<TextInput>(null)
 
-  const onCompleted = (data: login) => {
+  const onCompleted = async (data: login) => {
     const {
       login: { ok, token },
     } = data
-    if (ok) {
-      isLoggedInVar(true)
+    if (ok && token) {
+      await logUserIn(token)
     }
   }
 
