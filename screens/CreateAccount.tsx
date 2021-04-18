@@ -22,11 +22,11 @@ const CreateAccount = () => {
   const passwordRef = useRef<TextInput>(null)
 
   useEffect(() => {
-    register('firstName')
-    register('lastName')
-    register('username')
-    register('email')
-    register('password')
+    register('firstName', { required: true })
+    register('lastName', { required: true })
+    register('username', { required: true })
+    register('email', { required: true })
+    register('password', { required: true })
   }, [register])
 
   const onNext = (nextOne: React.RefObject<TextInput>) => {
@@ -84,7 +84,8 @@ const CreateAccount = () => {
       />
       <AuthButton
         text='Create Account'
-        disabled={true}
+        disabled={false}
+        loading={false}
         onPress={handleSubmit(onValid)}
       />
     </AuthLayout>

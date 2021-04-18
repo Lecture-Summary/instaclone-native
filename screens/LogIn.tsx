@@ -1,6 +1,6 @@
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { useEffect, useRef, VFC } from 'react'
-import { useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { TextInput } from 'react-native-gesture-handler'
 import AuthButton from '../components/auth/AuthButton'
 import AuthLayout from '../components/auth/AuthLayout'
@@ -14,6 +14,11 @@ type LogInScreenNavigationProp = StackNavigationProp<
 
 interface IProps {
   navigation: LogInScreenNavigationProp
+}
+
+interface IForm {
+  username: string
+  password: string
 }
 
 const LogIn: VFC<IProps> = ({ navigation }) => {
@@ -30,7 +35,7 @@ const LogIn: VFC<IProps> = ({ navigation }) => {
     nextOne.current?.focus()
   }
 
-  const onValid = (data) => {
+  const onValid: SubmitHandler<IForm> = (data) => {
     console.log(data)
   }
 
@@ -57,6 +62,7 @@ const LogIn: VFC<IProps> = ({ navigation }) => {
       <AuthButton
         text='Log In'
         disabled={false}
+        loading={false}
         onPress={handleSubmit(onValid)}
       />
     </AuthLayout>
