@@ -1,20 +1,40 @@
-import React, { useRef } from 'react'
-import { KeyboardAvoidingView, Platform, TextInput } from 'react-native'
-import Authbutton from '../components/auth/Authbutton'
+import React, { useEffect, useRef } from 'react'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { TextInput } from 'react-native'
+import AuthButton from '../components/auth/AuthButton'
 import AuthLayout from '../components/auth/AuthLayout'
 import { Input } from '../components/auth/AuthShared'
 
+interface IForm {
+  firstName: string
+  lastName: string
+  username: string
+  email: string
+  password: string
+}
+
 const CreateAccount = () => {
+  const { register, handleSubmit, setValue } = useForm<IForm>()
+
   const lastNameRef = useRef<TextInput>(null)
   const usernameRef = useRef<TextInput>(null)
   const emailRef = useRef<TextInput>(null)
   const passwordRef = useRef<TextInput>(null)
 
+  useEffect(() => {
+    register('firstName')
+    register('lastName')
+    register('username')
+    register('email')
+    register('password')
+  }, [register])
+
   const onNext = (nextOne: React.RefObject<TextInput>) => {
     nextOne.current?.focus()
   }
-  const onDone = () => {
-    alert('done!')
+
+  const onValid: SubmitHandler<IForm> = (data) => {
+    console.log(data)
   }
 
   return (
@@ -24,6 +44,7 @@ const CreateAccount = () => {
         placeholderTextColor='rgba(255, 255, 255, 0.8)'
         returnKeyType='next'
         onSubmitEditing={() => onNext(lastNameRef)}
+        onChangeText={(text) => setValue('firstName', text)}
       />
       <Input
         ref={lastNameRef}
@@ -31,13 +52,16 @@ const CreateAccount = () => {
         placeholderTextColor='rgba(255, 255, 255, 0.8)'
         returnKeyType='next'
         onSubmitEditing={() => onNext(usernameRef)}
+        onChangeText={(text) => setValue('lastName', text)}
       />
       <Input
         ref={usernameRef}
         placeholder='Username'
+        autoCapitalize='none'
         placeholderTextColor='rgba(255, 255, 255, 0.8)'
         returnKeyType='next'
         onSubmitEditing={() => onNext(emailRef)}
+        onChangeText={(text) => setValue('username', text)}
       />
       <Input
         ref={emailRef}
@@ -46,6 +70,7 @@ const CreateAccount = () => {
         keyboardType='email-address'
         returnKeyType='next'
         onSubmitEditing={() => onNext(passwordRef)}
+        onChangeText={(text) => setValue('email', text)}
       />
       <Input
         ref={passwordRef}
@@ -54,9 +79,14 @@ const CreateAccount = () => {
         secureTextEntry
         returnKeyType='done'
         lastOne={true}
-        onSubmitEditing={onDone}
+        onSubmitEditing={handleSubmit(onValid)}
+        onChangeText={(text) => setValue('password', text)}
       />
-      <Authbutton text='Create Account' disabled={true} onPress={() => null} />
+      <AuthButton
+        text='Create Account'
+        disabled={true}
+        onPress={handleSubmit(onValid)}
+      />
     </AuthLayout>
   )
 }

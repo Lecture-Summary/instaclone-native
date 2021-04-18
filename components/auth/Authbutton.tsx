@@ -22,7 +22,7 @@ interface IProps {
   text: string
 }
 
-const Authbutton: VFC<IProps> = ({ onPress, disabled, text }) => {
+const AuthButton: VFC<IProps> = ({ onPress, disabled, text }) => {
   return (
     <Button disabled={disabled} onPress={onPress}>
       <ButtonText>{text}</ButtonText>
@@ -30,4 +30,4 @@ const Authbutton: VFC<IProps> = ({ onPress, disabled, text }) => {
   )
 }
 
-export default Authbutton
+export default AuthButton

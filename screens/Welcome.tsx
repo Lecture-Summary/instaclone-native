@@ -5,7 +5,7 @@ import { LoggedOutNavParamList } from '../navigators/navigators'
 import styled from 'styled-components/native'
 import { colors } from '../colors'
 import AuthLayout from '../components/auth/AuthLayout'
-import Authbutton from '../components/auth/Authbutton'
+import AuthButton from '../components/auth/AuthButton'
 
 type WelcomeScreenNavigationProp = StackNavigationProp<
   LoggedOutNavParamList,
@@ -42,7 +42,7 @@ const Welcome: VFC<IProps> = ({ navigation }) => {
 
   return (
     <AuthLayout>
-      <Authbutton
+      <AuthButton
         text='Create New Account'
         disabled={false}
         onPress={goToCreateAccount}
