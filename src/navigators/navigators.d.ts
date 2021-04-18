@@ -6,4 +6,7 @@ export type LoggedOutNavParamList = {
 
 export type LoggedInNavParamList = {
   Feed: undefined
+  Search: undefined
+  Notifications: undefined
+  Profile: undefined
 }
