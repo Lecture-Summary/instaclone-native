@@ -7,7 +7,7 @@ import { TextInput } from 'react-native'
 import AuthButton from '../components/auth/AuthButton'
 import AuthLayout from '../components/auth/AuthLayout'
 import { Input } from '../components/auth/AuthShared'
-import { LoggedOutNavParamList } from '../navigators/navigators'
+import { NavParamList } from '../navigators/navigators'
 import {
   createAccount,
   createAccountVariables,
@@ -43,7 +43,7 @@ interface IForm {
 }
 
 type CreateAccountScreenNavigationProp = StackNavigationProp<
-  LoggedOutNavParamList,
+  NavParamList,
   'CreateAccount'
 >
 

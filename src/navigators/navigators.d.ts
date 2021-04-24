@@ -1,12 +1,12 @@
-export type LoggedOutNavParamList = {
+export type NavParamList = {
   Welcome: undefined
-  LogIn: { username?: string; password?: string }
+  LogIn: { username?: string; password?: string } | undefined
   CreateAccount: undefined
-}
-
-export type LoggedInNavParamList = {
   Feed: undefined
   Search: undefined
   Notifications: undefined
   Me: undefined
+  Camera: undefined
+  Photo: undefined
+  Profile: undefined
 }

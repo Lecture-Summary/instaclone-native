@@ -1,7 +1,15 @@
-import React from 'react'
+import { StackNavigationProp } from '@react-navigation/stack'
+import React, { VFC } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
+import { NavParamList } from '../navigators/navigators'
 
-const Photo = ({ navigation }) => {
+type PhotoScreenNavigationProp = StackNavigationProp<NavParamList, 'Photo'>
+
+interface IProps {
+  navigation: PhotoScreenNavigationProp
+}
+
+const Photo: VFC<IProps> = ({ navigation }) => {
   return (
     <View
       style={{

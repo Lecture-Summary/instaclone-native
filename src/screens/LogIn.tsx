@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client'
-import { RouteProp } from '@react-navigation/core'
+import { RouteProp, useRoute } from '@react-navigation/core'
 import { StackNavigationProp } from '@react-navigation/stack'
 import gql from 'graphql-tag'
 import React, { useEffect, useRef, VFC } from 'react'
@@ -9,7 +9,7 @@ import { logUserIn } from '../../apollo'
 import AuthButton from '../components/auth/AuthButton'
 import AuthLayout from '../components/auth/AuthLayout'
 import { Input } from '../components/auth/AuthShared'
-import { LoggedOutNavParamList } from '../navigators/navigators'
+import { NavParamList } from '../navigators/navigators'
 import { login, loginVariables } from '../__generated__/login'
 
 const LOGIN_MUTATION = gql`
@@ -22,12 +22,9 @@ const LOGIN_MUTATION = gql`
   }
 `
 
-type LogInScreenNavigationProp = StackNavigationProp<
-  LoggedOutNavParamList,
-  'LogIn'
->
+type LogInScreenNavigationProp = StackNavigationProp<NavParamList, 'LogIn'>
 
-type LogInScreenRouteProp = RouteProp<LoggedOutNavParamList, 'LogIn'>
+type LogInScreenRouteProp = RouteProp<NavParamList, 'LogIn'>
 
 interface IProps {
   navigation: LogInScreenNavigationProp

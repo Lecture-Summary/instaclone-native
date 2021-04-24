@@ -1,7 +1,15 @@
-import React from 'react'
+import { StackNavigationProp } from '@react-navigation/stack'
+import React, { VFC } from 'react'
 import { Text, TouchableOpacity, View } from 'react-native'
+import { NavParamList } from '../navigators/navigators'
 
-const Search = ({ navigation }) => {
+type SearchScreenNavigationProp = StackNavigationProp<NavParamList, 'Photo'>
+
+interface IProps {
+  navigation: SearchScreenNavigationProp
+}
+
+const Search: VFC<IProps> = ({ navigation }) => {
   return (
     <View
       style={{

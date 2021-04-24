@@ -1,11 +1,11 @@
 import React from 'react'
 import { createStackNavigator } from '@react-navigation/stack'
-import { LoggedOutNavParamList } from './navigators'
+import { NavParamList } from './navigators'
 import Welcome from '../screens/Welcome'
 import LogIn from '../screens/LogIn'
 import CreateAccount from '../screens/CreateAccount'
 
-const Stack = createStackNavigator<LoggedOutNavParamList>()
+const Stack = createStackNavigator<NavParamList>()
 
 const LoggedOutNav = () => {
   return (

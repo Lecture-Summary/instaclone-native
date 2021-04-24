@@ -1,16 +1,11 @@
 import React from 'react'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-import { Ionicons } from '@expo/vector-icons'
-import Feed from '../screens/Feed'
-import { LoggedInNavParamList } from './navigators'
+import { NavParamList } from './navigators'
 import Search from '../screens/Search'
-import Notifications from '../screens/Notifications'
-import Profile from '../screens/Profile'
 import TabIcon from '../components/nav/TabIcon'
-import Me from '../screens/Me'
 import StackNavFactory from '../components/nav/StackNavFactory'
 
-const Tabs = createBottomTabNavigator<LoggedInNavParamList>()
+const Tabs = createBottomTabNavigator<NavParamList>()
 
 const LoggedInNav = () => {
   return (
