@@ -15,7 +15,16 @@ interface IProps {
 
 const StackNavFactory: VFC<IProps> = ({ screenName }) => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerBackTitleVisible: false,
+        headerTintColor: 'white',
+        headerStyle: {
+          backgroundColor: 'black',
+          shadowColor: 'rgba(255, 255, 255, 0.2)',
+        },
+      }}
+    >
       {screenName === 'Feed' ? (
         <Stack.Screen name='Feed' component={Feed} />
       ) : null}
