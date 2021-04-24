@@ -9,4 +9,6 @@ export type NavParamList = {
   Camera: undefined
   Photo: undefined
   Profile: undefined
+  Likes: undefined
+  Comments: undefined
 }

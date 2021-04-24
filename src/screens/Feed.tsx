@@ -33,7 +33,7 @@ const Feed = () => {
     | ListRenderItem<seeFeed_seeFeed | null>
     | null
     | undefined = ({ item: photo }) => {
-    return <Photo {...photo} />
+    return photo && <Photo {...photo} />
   }
 
   return (

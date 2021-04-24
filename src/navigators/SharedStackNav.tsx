@@ -1,14 +1,17 @@
 import { createStackNavigator } from '@react-navigation/stack'
 import React, { VFC } from 'react'
 import { Image } from 'react-native'
+import Comments from '../screens/Comments'
 import Feed from '../screens/Feed'
+import Likes from '../screens/Likes'
 import Me from '../screens/Me'
 import Notifications from '../screens/Notifications'
 import Photo from '../screens/Photo'
 import Profile from '../screens/Profile'
 import Search from '../screens/Search'
+import { NavParamList } from './navigators'
 
-const Stack = createStackNavigator()
+const Stack = createStackNavigator<NavParamList>()
 
 interface IProps {
   screenName: string
@@ -51,6 +54,8 @@ const StackNavFactory: VFC<IProps> = ({ screenName }) => {
       {screenName === 'Me' ? <Stack.Screen name='Me' component={Me} /> : null}
       <Stack.Screen name='Profile' component={Profile} />
       <Stack.Screen name='Photo' component={Photo} />
+      <Stack.Screen name='Likes' component={Likes} />
+      <Stack.Screen name='Comments' component={Comments} />
     </Stack.Navigator>
   )
 }
