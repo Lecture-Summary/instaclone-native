@@ -74,7 +74,7 @@ const Photo: VFC<seeFeed_seeFeed> = ({
         resizeMode='cover'
         style={{
           width,
-          height: imageHeight,
+          height: width,
         }}
         source={{ uri: file }}
       />
