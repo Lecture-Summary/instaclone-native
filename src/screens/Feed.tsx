@@ -1,10 +1,18 @@
 import { gql, useQuery, useReactiveVar } from '@apollo/client'
 import React from 'react'
-import { Text, View } from 'react-native'
+import {
+  ActivityIndicator,
+  FlatList,
+  ListRenderItem,
+  Text,
+  View,
+} from 'react-native'
 import { tokenVar } from '../../apollo'
+import ScreenLayout from '../components/ScreenLayout'
 
 import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from '../fragment'
-import { seeFeed } from '../__generated__/seeFeed'
+import { seeFeed, seeFeed_seeFeed } from '../__generated__/seeFeed'
+import Photo from './Photo'
 
 const FEED_QUERY = gql`
   query seeFeed {
@@ -27,21 +35,27 @@ const FEED_QUERY = gql`
 `
 
 const Feed = () => {
-  const { data } = useQuery<seeFeed>(FEED_QUERY)
+  const { data, loading } = useQuery<seeFeed>(FEED_QUERY)
 
-  console.log(data)
+  const renderPhoto:
+    | ListRenderItem<seeFeed_seeFeed | null>
+    | null
+    | undefined = ({ item: photo }) => {
+    return (
+      <View style={{ flex: 1 }}>
+        <Text style={{ color: 'white' }}>{photo?.caption}</Text>
+      </View>
+    )
+  }
 
   return (
-    <View
-      style={{
-        backgroundColor: 'black',
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <Text style={{ color: 'white' }}>Feed</Text>
-    </View>
+    <ScreenLayout loading={loading}>
+      <FlatList
+        data={data?.seeFeed}
+        keyExtractor={(photo) => '' + photo?.id}
+        renderItem={renderPhoto}
+      />
+    </ScreenLayout>
   )
 }
 
