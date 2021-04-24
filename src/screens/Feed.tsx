@@ -1,18 +1,10 @@
-import { gql, useQuery, useReactiveVar } from '@apollo/client'
+import { gql, useQuery } from '@apollo/client'
 import React from 'react'
-import {
-  ActivityIndicator,
-  FlatList,
-  ListRenderItem,
-  Text,
-  View,
-} from 'react-native'
-import { tokenVar } from '../../apollo'
+import { FlatList, ListRenderItem, Text, View } from 'react-native'
+import Photo from '../components/Photo'
 import ScreenLayout from '../components/ScreenLayout'
-
 import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from '../fragment'
 import { seeFeed, seeFeed_seeFeed } from '../__generated__/seeFeed'
-import Photo from './Photo'
 
 const FEED_QUERY = gql`
   query seeFeed {
@@ -41,16 +33,14 @@ const Feed = () => {
     | ListRenderItem<seeFeed_seeFeed | null>
     | null
     | undefined = ({ item: photo }) => {
-    return (
-      <View style={{ flex: 1 }}>
-        <Text style={{ color: 'white' }}>{photo?.caption}</Text>
-      </View>
-    )
+    return <Photo {...photo} />
   }
 
   return (
     <ScreenLayout loading={loading}>
       <FlatList
+        style={{ width: '100%' }}
+        showsVerticalScrollIndicator={false}
         data={data?.seeFeed}
         keyExtractor={(photo) => '' + photo?.id}
         renderItem={renderPhoto}
