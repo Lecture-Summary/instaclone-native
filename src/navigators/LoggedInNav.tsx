@@ -3,7 +3,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { NavParamList } from './navigators'
 import Search from '../screens/Search'
 import TabIcon from '../components/nav/TabIcon'
-import StackNavFactory from '../components/nav/StackNavFactory'
+import StackNavFactory from './SharedStackNav'
 
 const Tabs = createBottomTabNavigator<NavParamList>()
 

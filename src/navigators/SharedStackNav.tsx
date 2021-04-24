@@ -1,11 +1,12 @@
 import { createStackNavigator } from '@react-navigation/stack'
 import React, { VFC } from 'react'
-import Feed from '../../screens/Feed'
-import Me from '../../screens/Me'
-import Notifications from '../../screens/Notifications'
-import Photo from '../../screens/Photo'
-import Profile from '../../screens/Profile'
-import Search from '../../screens/Search'
+import { Image } from 'react-native'
+import Feed from '../screens/Feed'
+import Me from '../screens/Me'
+import Notifications from '../screens/Notifications'
+import Photo from '../screens/Photo'
+import Profile from '../screens/Profile'
+import Search from '../screens/Search'
 
 const Stack = createStackNavigator()
 
@@ -16,6 +17,7 @@ interface IProps {
 const StackNavFactory: VFC<IProps> = ({ screenName }) => {
   return (
     <Stack.Navigator
+      headerMode='screen'
       screenOptions={{
         headerBackTitleVisible: false,
         headerTintColor: 'white',
@@ -26,7 +28,19 @@ const StackNavFactory: VFC<IProps> = ({ screenName }) => {
       }}
     >
       {screenName === 'Feed' ? (
-        <Stack.Screen name='Feed' component={Feed} />
+        <Stack.Screen
+          name='Feed'
+          component={Feed}
+          options={{
+            headerTitle: () => (
+              <Image
+                style={{ maxHeight: 40 }}
+                resizeMode='contain'
+                source={require('../../assets/logo.png')}
+              />
+            ),
+          }}
+        />
       ) : null}
       {screenName === 'Search' ? (
         <Stack.Screen name='Search' component={Search} />
