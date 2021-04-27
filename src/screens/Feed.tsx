@@ -50,7 +50,7 @@ const Feed = () => {
         onEndReached={() =>
           fetchMore({ variables: { offset: data?.seeFeed?.length } })
         }
-        onEndReachedThreshold={0}
+        onEndReachedThreshold={0.05}
         refreshing={refreshing}
         onRefresh={refresh}
         style={{ width: '100%' }}
