@@ -7,8 +7,8 @@ import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from '../fragment'
 import { seeFeed, seeFeed_seeFeed } from '../__generated__/seeFeed'
 
 const FEED_QUERY = gql`
-  query seeFeed {
-    seeFeed {
+  query seeFeed($offset: Int!) {
+    seeFeed(offset: $offset) {
       ...PhotoFragment
       user {
         username
@@ -28,7 +28,9 @@ const FEED_QUERY = gql`
 
 const Feed = () => {
   const [refreshing, setRefreshing] = useState(false)
-  const { data, loading, refetch } = useQuery<seeFeed>(FEED_QUERY)
+  const { data, loading, refetch, fetchMore } = useQuery<seeFeed>(FEED_QUERY, {
+    variables: { offset: 0 },
+  })
 
   const renderPhoto:
     | ListRenderItem<seeFeed_seeFeed | null>
@@ -45,6 +47,10 @@ const Feed = () => {
   return (
     <ScreenLayout loading={loading}>
       <FlatList
+        onEndReached={() =>
+          fetchMore({ variables: { offset: data?.seeFeed?.length } })
+        }
+        onEndReachedThreshold={0}
         refreshing={refreshing}
         onRefresh={refresh}
         style={{ width: '100%' }}
