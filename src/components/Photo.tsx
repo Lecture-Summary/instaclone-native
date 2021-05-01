@@ -4,6 +4,18 @@ import { Ionicons } from '@expo/vector-icons'
 import { Image, TouchableOpacity, useWindowDimensions } from 'react-native'
 import styled from 'styled-components/native'
 import { seeFeed_seeFeed } from '../__generated__/seeFeed'
+import gql from 'graphql-tag'
+import { ApolloCache, FetchResult, useMutation } from '@apollo/client'
+import { toggleLike, toggleLikeVariables } from '../__generated__/toggleLike'
+
+const TOGGLE_LIKE_MUTATION = gql`
+  mutation toggleLike($id: Int!) {
+    toggleLike(id: $id) {
+      ok
+      error
+    }
+  }
+`
 
 const Container = styled.View``
 const Header = styled.TouchableOpacity`
@@ -62,6 +74,42 @@ const Photo: VFC<seeFeed_seeFeed> = ({
     })
   }, [file])
 
+  const updateToggleLike = (
+    cache: ApolloCache<any>,
+    result: FetchResult<any>
+  ) => {
+    const {
+      data: {
+        toggleLike: { ok },
+      },
+    } = result
+    if (ok) {
+      const photoId = `Photo:${id}`
+      cache.modify({
+        id: photoId,
+        fields: {
+          isLiked(prev) {
+            return !prev
+          },
+          likes(prev) {
+            if (isLiked) {
+              return prev - 1
+            }
+            return prev + 1
+          },
+        },
+      })
+    }
+  }
+
+  const [toggleLikeMutation] = useMutation<toggleLike, toggleLikeVariables>(
+    TOGGLE_LIKE_MUTATION,
+    {
+      variables: { id },
+      update: updateToggleLike,
+    }
+  )
+
   return (
     <Container>
       <Header onPress={() => navigation.navigate('Profile')}>
@@ -81,7 +129,7 @@ const Photo: VFC<seeFeed_seeFeed> = ({
 
       <ExtraContainer>
         <Actions>
-          <Action>
+          <Action onPress={() => toggleLikeMutation()}>
             <Ionicons
               name={isLiked ? 'heart' : 'heart-outline'}
               color={isLiked ? 'tomato' : 'white'}
