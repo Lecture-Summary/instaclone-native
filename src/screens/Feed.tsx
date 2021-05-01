@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { FlatList, ListRenderItem } from 'react-native'
 import Photo from '../components/Photo'
 import ScreenLayout from '../components/ScreenLayout'
-import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from '../fragment'
+import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from '../fragments'
 import { seeFeed, seeFeed_seeFeed } from '../__generated__/seeFeed'
 
 const FEED_QUERY = gql`

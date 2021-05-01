@@ -140,7 +140,9 @@ const Photo: VFC<seeFeed_seeFeed> = ({
             <Ionicons name='chatbubble-outline' color='white' size={22} />
           </Action>
         </Actions>
-        <TouchableOpacity onPress={() => navigation.navigate('Likes')}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('Likes', { photoId: id })}
+        >
           <Likes>{likes === 1 ? '1 like' : `${likes} likes`}</Likes>
         </TouchableOpacity>
         <Caption>
