@@ -2,12 +2,15 @@ import { useLazyQuery } from '@apollo/client'
 import { StackNavigationProp } from '@react-navigation/stack'
 import gql from 'graphql-tag'
 import React, { useEffect, VFC } from 'react'
-import { useForm } from 'react-hook-form'
-import { Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { ActivityIndicator, TextInput, View } from 'react-native'
 import styled from 'styled-components/native'
 import DismissKeyboard from '../components/DismissKeyboard'
 import { NavParamList } from '../navigators/navigators'
-import { searchPhotos } from '../__generated__/searchPhotos'
+import {
+  searchPhotos,
+  searchPhotosVariables,
+} from '../__generated__/searchPhotos'
 
 const SEARCH_PHOTOS = gql`
   query searchPhotos($keyword: String!) {
@@ -16,6 +19,18 @@ const SEARCH_PHOTOS = gql`
       file
     }
   }
+`
+
+const MessageContainer = styled.View`
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+`
+
+const MessageText = styled.Text`
+  margin-top: 15px;
+  color: white;
+  font-weight: 600;
 `
 
 const Input = styled.TextInput``
@@ -31,10 +46,15 @@ interface IForm {
 }
 
 const Search: VFC<IProps> = ({ navigation }) => {
-  const { setValue, register } = useForm<IForm>()
-  const [startQueryFn, { loading, data }] = useLazyQuery<searchPhotos>(
-    SEARCH_PHOTOS
-  )
+  const { setValue, register, handleSubmit } = useForm<IForm>()
+  const [startQueryFn, { loading, data, called }] = useLazyQuery<
+    searchPhotos,
+    searchPhotosVariables
+  >(SEARCH_PHOTOS)
+
+  const onValid: SubmitHandler<IForm> = ({ keyword }) => {
+    startQueryFn({ variables: { keyword } })
+  }
 
   const SearchBox = () => (
     <TextInput
@@ -46,29 +66,37 @@ const Search: VFC<IProps> = ({ navigation }) => {
       returnKeyType='search'
       autoCorrect={false}
       onChangeText={(text) => setValue('keyword', text)}
+      onSubmitEditing={handleSubmit(onValid)}
     />
   )
   useEffect(() => {
     navigation.setOptions({
       headerTitle: SearchBox,
     })
-    register('keyword')
+    register('keyword', { required: true, minLength: 3 })
   }, [])
+
+  console.log(data)
 
   return (
     <DismissKeyboard>
-      <View
-        style={{
-          backgroundColor: 'black',
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Text style={{ color: 'white' }}>Search</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Photo')}>
-          <Text style={{ color: 'white' }}>Photo</Text>
-        </TouchableOpacity>
+      <View style={{ flex: 1, backgroundColor: 'black' }}>
+        {loading ? (
+          <MessageContainer>
+            <ActivityIndicator size='large' />
+            <MessageText>Searching...</MessageText>
+          </MessageContainer>
+        ) : null}
+        {!called ? (
+          <MessageContainer>
+            <MessageText>Search by keyword</MessageText>
+          </MessageContainer>
+        ) : null}
+        {data?.searchPhotos !== undefined && data.searchPhotos?.length === 0 ? (
+          <MessageContainer>
+            <MessageText>Could not find anything.</MessageText>
+          </MessageContainer>
+        ) : null}
       </View>
     </DismissKeyboard>
   )
