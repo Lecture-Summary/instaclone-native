@@ -1,7 +1,27 @@
-import React from 'react'
+import { RouteProp } from '@react-navigation/core'
+import { StackNavigationProp } from '@react-navigation/stack'
+import React, { useEffect, VFC } from 'react'
 import { Text, View } from 'react-native'
+import { NavParamList } from '../navigators/navigators'
 
-const Profile = () => {
+type ProfileScreenNavigationProp = StackNavigationProp<NavParamList, 'Profile'>
+
+type ProfileScreenRouteProp = RouteProp<NavParamList, 'Profile'>
+
+interface IProps {
+  navigation: ProfileScreenNavigationProp
+  route: ProfileScreenRouteProp
+}
+
+const Profile: VFC<IProps> = ({ navigation, route }) => {
+  useEffect(() => {
+    if (route.params.username) {
+      navigation.setOptions({
+        title: route.params.username,
+      })
+    }
+  }, [])
+
   return (
     <View
       style={{
