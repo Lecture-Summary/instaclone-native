@@ -4,10 +4,14 @@ import { NavParamList } from './navigators'
 import Search from '../screens/Search'
 import TabIcon from '../components/nav/TabIcon'
 import StackNavFactory from './SharedStackNav'
+import useMe from '../hooks/useMe'
+import { Image } from 'react-native'
 
 const Tabs = createBottomTabNavigator<NavParamList>()
 
 const LoggedInNav = () => {
+  const { data } = useMe()
+
   return (
     <Tabs.Navigator
       tabBarOptions={{
@@ -61,9 +65,20 @@ const LoggedInNav = () => {
       <Tabs.Screen
         name='Me'
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <TabIcon iconName='person' color={color} focused={focused} />
-          ),
+          tabBarIcon: ({ color, focused }) =>
+            data?.me?.avatar ? (
+              <Image
+                source={{ uri: data.me.avatar }}
+                style={{
+                  height: 20,
+                  width: 20,
+                  borderRadius: 10,
+                  ...(focused && { borderColor: 'white', borderWidth: 1 }),
+                }}
+              />
+            ) : (
+              <TabIcon iconName='person' color={color} focused={focused} />
+            ),
         }}
       >
         {() => <StackNavFactory screenName='Me' />}

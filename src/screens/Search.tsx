@@ -1,10 +1,22 @@
+import { useLazyQuery } from '@apollo/client'
 import { StackNavigationProp } from '@react-navigation/stack'
+import gql from 'graphql-tag'
 import React, { useEffect, VFC } from 'react'
 import { useForm } from 'react-hook-form'
 import { Text, TextInput, TouchableOpacity, View } from 'react-native'
 import styled from 'styled-components/native'
 import DismissKeyboard from '../components/DismissKeyboard'
 import { NavParamList } from '../navigators/navigators'
+import { searchPhotos } from '../__generated__/searchPhotos'
+
+const SEARCH_PHOTOS = gql`
+  query searchPhotos($keyword: String!) {
+    searchPhotos(keyword: $keyword) {
+      id
+      file
+    }
+  }
+`
 
 const Input = styled.TextInput``
 
@@ -19,7 +31,10 @@ interface IForm {
 }
 
 const Search: VFC<IProps> = ({ navigation }) => {
-  const { setValue, register, watch } = useForm<IForm>()
+  const { setValue, register } = useForm<IForm>()
+  const [startQueryFn, { loading, data }] = useLazyQuery<searchPhotos>(
+    SEARCH_PHOTOS
+  )
 
   const SearchBox = () => (
     <TextInput
