@@ -90,11 +90,16 @@ const Search: VFC<IProps> = ({ navigation }) => {
     })
     register('keyword', { required: true, minLength: 3 })
   }, [])
+
   const renderItem:
     | ListRenderItem<searchPhotos_searchPhotos | null>
     | null
     | undefined = ({ item: photo }) => (
-    <TouchableOpacity>
+    <TouchableOpacity
+      onPress={() =>
+        photo?.id && navigation.navigate('Photo', { photoId: photo.id })
+      }
+    >
       <Image
         source={{ uri: photo?.file }}
         style={{ width: width / numColumns, height: 100 }}
