@@ -3,13 +3,22 @@ import { StackNavigationProp } from '@react-navigation/stack'
 import gql from 'graphql-tag'
 import React, { useEffect, VFC } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
-import { ActivityIndicator, TextInput, View } from 'react-native'
+import {
+  ActivityIndicator,
+  FlatList,
+  Image,
+  ListRenderItem,
+  TouchableOpacity,
+  useWindowDimensions,
+  View,
+} from 'react-native'
 import styled from 'styled-components/native'
 import DismissKeyboard from '../components/DismissKeyboard'
 import { NavParamList } from '../navigators/navigators'
 import {
   searchPhotos,
   searchPhotosVariables,
+  searchPhotos_searchPhotos,
 } from '../__generated__/searchPhotos'
 
 const SEARCH_PHOTOS = gql`
@@ -33,7 +42,13 @@ const MessageText = styled.Text`
   font-weight: 600;
 `
 
-const Input = styled.TextInput``
+const Input = styled.TextInput<{ width: number }>`
+  background-color: rgba(255, 255, 255, 1);
+  color: black;
+  width: ${(props) => props.width / 1.5}px;
+  padding: 5px 10px;
+  border-radius: 7px;
+`
 
 type SearchScreenNavigationProp = StackNavigationProp<NavParamList, 'Photo'>
 
@@ -46,20 +61,20 @@ interface IForm {
 }
 
 const Search: VFC<IProps> = ({ navigation }) => {
+  const numColumns = 4
+  const { width } = useWindowDimensions()
   const { setValue, register, handleSubmit } = useForm<IForm>()
-  const [startQueryFn, { loading, data, called }] = useLazyQuery<
-    searchPhotos,
-    searchPhotosVariables
-  >(SEARCH_PHOTOS)
+  const [startQueryFn, { loading, data, called }] =
+    useLazyQuery<searchPhotos, searchPhotosVariables>(SEARCH_PHOTOS)
 
   const onValid: SubmitHandler<IForm> = ({ keyword }) => {
     startQueryFn({ variables: { keyword } })
   }
 
   const SearchBox = () => (
-    <TextInput
-      style={{ backgroundColor: 'white' }}
-      placeholderTextColor='black'
+    <Input
+      width={width}
+      placeholderTextColor='rgba(0, 0, 0, 0.8)'
       placeholder='Search photos'
       autoCapitalize='none'
       returnKeyLabel='Search'
@@ -75,8 +90,17 @@ const Search: VFC<IProps> = ({ navigation }) => {
     })
     register('keyword', { required: true, minLength: 3 })
   }, [])
-
-  console.log(data)
+  const renderItem:
+    | ListRenderItem<searchPhotos_searchPhotos | null>
+    | null
+    | undefined = ({ item: photo }) => (
+    <TouchableOpacity>
+      <Image
+        source={{ uri: photo?.file }}
+        style={{ width: width / numColumns, height: 100 }}
+      />
+    </TouchableOpacity>
+  )
 
   return (
     <DismissKeyboard>
@@ -92,10 +116,19 @@ const Search: VFC<IProps> = ({ navigation }) => {
             <MessageText>Search by keyword</MessageText>
           </MessageContainer>
         ) : null}
-        {data?.searchPhotos !== undefined && data.searchPhotos?.length === 0 ? (
-          <MessageContainer>
-            <MessageText>Could not find anything.</MessageText>
-          </MessageContainer>
+        {data?.searchPhotos !== undefined ? (
+          data.searchPhotos?.length === 0 ? (
+            <MessageContainer>
+              <MessageText>Could not find anything.</MessageText>
+            </MessageContainer>
+          ) : (
+            <FlatList
+              numColumns={numColumns}
+              data={data.searchPhotos}
+              keyExtractor={(photo) => '' + photo?.id}
+              renderItem={renderItem}
+            />
+          )
         ) : null}
       </View>
     </DismissKeyboard>
