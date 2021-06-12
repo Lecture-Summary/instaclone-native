@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { VFC } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { FlatList, ListRenderItem, TouchableOpacity } from 'react-native'
 import * as MediaLibrary from 'expo-media-library'
@@ -7,6 +7,9 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { Image } from 'react-native'
 import { useWindowDimensions } from 'react-native'
+import { colors } from '../../colors'
+import { StackNavigationProp } from '@react-navigation/stack'
+import { NavParamList } from '../navigators/navigators'
 
 const Container = styled.View`
   flex: 1;
@@ -24,15 +27,32 @@ const Bottom = styled.View`
 `
 
 const ImageContainer = styled.TouchableOpacity``
+
 const IconContainer = styled.View`
   position: absolute;
   bottom: 5px;
   right: 0px;
 `
 
-const SelectPhoto = () => {
+const HeaderRightText = styled.Text`
+  color: ${colors.blue};
+  font-size: 16px;
+  font-weight: 600;
+  margin-right: 7px;
+`
+
+type SelectPhotoScreenNavigationProp = StackNavigationProp<
+  NavParamList,
+  'Select'
+>
+
+interface IProps {
+  navigation: SelectPhotoScreenNavigationProp
+}
+
+const SelectPhoto: VFC<IProps> = ({ navigation }) => {
   const numColumns = 4
-  const [ok, setOk] = useState(false)
+
   const [photos, setPhotos] = useState<MediaLibrary.Asset[]>([])
   const [chosenPhoto, setChosenPhoto] = useState('')
   const { width } = useWindowDimensions()
@@ -49,17 +69,25 @@ const SelectPhoto = () => {
     if (accessPrivileges === 'none' && canAskAgain) {
       const { accessPrivileges } = await MediaLibrary.requestPermissionsAsync()
       if (accessPrivileges !== 'none') {
-        setOk(true)
         getPhotos()
       }
     } else if (accessPrivileges !== 'none') {
-      setOk(true)
       getPhotos()
     }
   }
 
+  const HeaderRight = () => (
+    <TouchableOpacity>
+      <HeaderRightText>Next</HeaderRightText>
+    </TouchableOpacity>
+  )
   useEffect(() => {
     getPermissions()
+  }, [])
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: HeaderRight,
+    })
   }, [])
 
   const choosePhoto = (uri: string) => {
@@ -73,7 +101,11 @@ const SelectPhoto = () => {
         style={{ width: width / numColumns, height: 100 }}
       />
       <IconContainer>
-        <Ionicons name='checkmark-circle' size={18} color='white' />
+        <Ionicons
+          name='checkmark-circle'
+          size={18}
+          color={photo.uri === chosenPhoto ? colors.blue : 'white'}
+        />
       </IconContainer>
     </ImageContainer>
   )
