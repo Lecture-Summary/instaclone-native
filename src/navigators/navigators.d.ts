@@ -13,4 +13,6 @@ export type NavParamList = {
   Comments: undefined
   Tabs: undefined
   Upload: undefined
+  Select: undefined
+  TakePhoto: undefined
 }
