@@ -11,4 +11,6 @@ export type NavParamList = {
   Profile: { username: string; id: number }
   Likes: { photoId: string }
   Comments: undefined
+  Tabs: undefined
+  Upload: undefined
 }
