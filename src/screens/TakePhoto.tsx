@@ -8,6 +8,7 @@ import styled from 'styled-components/native'
 import Slider from '@react-native-community/slider'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { NavParamList } from '../navigators/navigators'
+import { useRef } from 'react'
 
 const Container = styled.View`
   flex: 1;
@@ -54,6 +55,8 @@ interface IProps {
 }
 
 const TakePhoto: VFC<IProps> = ({ navigation }) => {
+  const camera = useRef<Camera>(null)
+  const [cameraReady, setCameraReady] = useState(false)
   const [ok, setOk] = useState(false)
   const [flashMode, setFlashMode] = useState(Camera.Constants.FlashMode.off)
   const [zoom, setZoom] = useState(0)
@@ -89,10 +92,28 @@ const TakePhoto: VFC<IProps> = ({ navigation }) => {
     }
   }
 
+  const onCameraReady = () => setCameraReady(true)
+
+  const takePhoto = async () => {
+    if (camera.current && cameraReady) {
+      const photo = await camera.current.takePictureAsync({
+        quality: 1,
+        exif: true,
+      })
+      console.log(photo)
+    }
+  }
+
   return (
     <Container>
       <StatusBar hidden={true} />
-      <Camera type={cameraType} style={{ flex: 1 }} zoom={zoom}>
+      <Camera
+        type={cameraType}
+        style={{ flex: 1 }}
+        zoom={zoom}
+        ref={camera}
+        onCameraReady={onCameraReady}
+      >
         <CloseButton onPress={() => navigation.navigate('Tabs')}>
           <Ionicons name='close' color='white' size={30} />
         </CloseButton>
@@ -109,7 +130,7 @@ const TakePhoto: VFC<IProps> = ({ navigation }) => {
           />
         </SliderContainer>
         <ButtonsContainer>
-          <TakePhotoBtn></TakePhotoBtn>
+          <TakePhotoBtn onPress={takePhoto} />
           <ActionsContainer>
             <TouchableOpacity
               onPress={onFlashChange}
@@ -118,6 +139,7 @@ const TakePhoto: VFC<IProps> = ({ navigation }) => {
               <Ionicons
                 size={30}
                 color='white'
+                // @ts-ignore
                 name={
                   flashMode === Camera.Constants.FlashMode.off
                     ? 'flash-off'
