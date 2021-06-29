@@ -1,12 +1,15 @@
-import React, { VFC } from 'react'
+import React, { VFC, useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
-import { FlatList, ListRenderItem, TouchableOpacity } from 'react-native'
+import {
+  FlatList,
+  ListRenderItem,
+  TouchableOpacity,
+  Image,
+  StatusBar,
+  useWindowDimensions,
+} from 'react-native'
 import * as MediaLibrary from 'expo-media-library'
 import styled from 'styled-components/native'
-import { useEffect } from 'react'
-import { useState } from 'react'
-import { Image } from 'react-native'
-import { useWindowDimensions } from 'react-native'
 import { colors } from '../../colors'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { NavParamList } from '../navigators/navigators'
@@ -52,7 +55,6 @@ interface IProps {
 
 const SelectPhoto: VFC<IProps> = ({ navigation }) => {
   const numColumns = 4
-
   const [photos, setPhotos] = useState<MediaLibrary.Asset[]>([])
   const [chosenPhoto, setChosenPhoto] = useState('')
   const { width } = useWindowDimensions()
@@ -77,7 +79,9 @@ const SelectPhoto: VFC<IProps> = ({ navigation }) => {
   }
 
   const HeaderRight = () => (
-    <TouchableOpacity>
+    <TouchableOpacity
+      onPress={() => navigation.navigate('UploadForm', { file: chosenPhoto })}
+    >
       <HeaderRightText>Next</HeaderRightText>
     </TouchableOpacity>
   )
@@ -112,6 +116,7 @@ const SelectPhoto: VFC<IProps> = ({ navigation }) => {
 
   return (
     <Container>
+      <StatusBar hidden={false} />
       <Top>
         {chosenPhoto !== '' ? (
           <Image

@@ -15,4 +15,5 @@ export type NavParamList = {
   Upload: undefined
   Select: undefined
   TakePhoto: undefined
+  UploadForm: { file: string }
 }

@@ -12,6 +12,7 @@ import { useRef } from 'react'
 import * as MediaLibrary from 'expo-media-library'
 import { Image } from 'react-native'
 import { Text } from 'react-native'
+import { useIsFocused } from '@react-navigation/native'
 
 const Container = styled.View`
   flex: 1;
@@ -124,7 +125,7 @@ const TakePhoto: VFC<IProps> = ({ navigation }) => {
     if (save) {
       await MediaLibrary.saveToLibraryAsync(takenPhoto)
     }
-    console.log('Will upload', takenPhoto)
+    navigation.navigate('UploadForm', { file: takenPhoto })
   }
 
   const onUpload = () => {
@@ -140,9 +141,11 @@ const TakePhoto: VFC<IProps> = ({ navigation }) => {
     ])
   }
 
+  const isFocused = useIsFocused()
+
   return (
     <Container>
-      <StatusBar hidden={true} />
+      {isFocused ? <StatusBar hidden={true} /> : null}
       {takenPhoto === '' ? (
         <Camera
           type={cameraType}
