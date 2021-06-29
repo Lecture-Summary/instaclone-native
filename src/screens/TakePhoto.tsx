@@ -3,7 +3,7 @@ import React, { VFC } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { useState } from 'react'
 import { useEffect } from 'react'
-import { TouchableOpacity, StatusBar } from 'react-native'
+import { TouchableOpacity, StatusBar, Alert } from 'react-native'
 import styled from 'styled-components/native'
 import Slider from '@react-native-community/slider'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -115,11 +115,30 @@ const TakePhoto: VFC<IProps> = ({ navigation }) => {
         exif: true,
       })
       setTakenPhoto(uri)
-      // const asset = await MediaLibrary.createAssetAsync(uri)
     }
   }
 
   const onDismiss = () => setTakenPhoto('')
+
+  const goToUpload = async (save: boolean) => {
+    if (save) {
+      await MediaLibrary.saveToLibraryAsync(takenPhoto)
+    }
+    console.log('Will upload', takenPhoto)
+  }
+
+  const onUpload = () => {
+    Alert.alert('Save photo?', 'Save photo & upload or just upload', [
+      {
+        text: 'Save & Upload',
+        onPress: () => goToUpload(true),
+      },
+      {
+        text: 'Just upload',
+        onPress: () => goToUpload(false),
+      },
+    ])
+  }
 
   return (
     <Container>
@@ -192,11 +211,8 @@ const TakePhoto: VFC<IProps> = ({ navigation }) => {
           <PhotoAction onPress={onDismiss}>
             <PhotoActionText>Dismiss</PhotoActionText>
           </PhotoAction>
-          <PhotoAction>
+          <PhotoAction onPress={onUpload}>
             <PhotoActionText>Upload</PhotoActionText>
-          </PhotoAction>
-          <PhotoAction>
-            <PhotoActionText>Save & Upload</PhotoActionText>
           </PhotoAction>
         </Actions>
       )}
