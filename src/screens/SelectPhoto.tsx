@@ -92,7 +92,7 @@ const SelectPhoto: VFC<IProps> = ({ navigation }) => {
     navigation.setOptions({
       headerRight: HeaderRight,
     })
-  }, [])
+  }, [chosenPhoto])
 
   const choosePhoto = (uri: string) => {
     setChosenPhoto(uri)
