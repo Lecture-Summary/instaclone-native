@@ -1,10 +1,13 @@
 import { gql, useQuery } from '@apollo/client'
-import React, { useState } from 'react'
-import { FlatList, ListRenderItem } from 'react-native'
+import { StackNavigationProp } from '@react-navigation/stack'
+import React, { useState, VFC, useEffect } from 'react'
+import { FlatList, ListRenderItem, TouchableOpacity } from 'react-native'
 import Photo from '../components/Photo'
 import ScreenLayout from '../components/ScreenLayout'
 import { COMMENT_FRAGMENT, PHOTO_FRAGMENT } from '../fragments'
+import { NavParamList } from '../navigators/navigators'
 import { seeFeed, seeFeed_seeFeed } from '../__generated__/seeFeed'
+import { Ionicons } from '@expo/vector-icons'
 
 const FEED_QUERY = gql`
   query seeFeed($offset: Int!) {
@@ -27,24 +30,44 @@ const FEED_QUERY = gql`
   ${COMMENT_FRAGMENT}
 `
 
-const Feed = () => {
+type FeedNavProp = StackNavigationProp<NavParamList, 'Feed'>
+
+interface IProps {
+  navigation: FeedNavProp
+}
+
+const Feed: VFC<IProps> = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false)
   const { data, loading, refetch, fetchMore } = useQuery<seeFeed>(FEED_QUERY, {
     variables: { offset: 0 },
   })
 
-  const renderPhoto:
-    | ListRenderItem<seeFeed_seeFeed | null>
-    | null
-    | undefined = ({ item: photo }) => {
-    return photo && <Photo {...photo} />
-  }
+  const renderPhoto: ListRenderItem<seeFeed_seeFeed | null> | null | undefined =
+    ({ item: photo }) => {
+      return photo && <Photo {...photo} />
+    }
 
   const refresh = async () => {
     setRefreshing(true)
     await refetch()
     setRefreshing(false)
   }
+
+  const MessagesButton = () => (
+    <TouchableOpacity
+      style={{ marginRight: 25 }}
+      onPress={() => navigation.navigate('Messages')}
+    >
+      <Ionicons name='paper-plane' color='white' size={20} />
+    </TouchableOpacity>
+  )
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: MessagesButton,
+    })
+  }, [])
+
   return (
     <ScreenLayout loading={loading}>
       <FlatList

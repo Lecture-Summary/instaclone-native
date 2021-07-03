@@ -5,6 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import TabsNav from './TabsNav'
 import UploadNav from './UploadNav'
 import UploadForm from '../screens/UploadForm'
+import MessagesNav from './MessagesNav'
 
 const Stack = createStackNavigator<NavParamList>()
 
@@ -35,6 +36,11 @@ const LoggedInNav = () => {
             <Ionicons color={tintColor} name='close' size={28} />
           ),
         }}
+      />
+      <Stack.Screen
+        name='Messages'
+        component={MessagesNav}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   )

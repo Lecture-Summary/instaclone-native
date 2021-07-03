@@ -16,4 +16,7 @@ export type NavParamList = {
   Select: undefined
   TakePhoto: undefined
   UploadForm: { file: string }
+  Rooms: undefined
+  Room: undefined
+  Messages: undefined
 }
