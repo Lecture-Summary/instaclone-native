@@ -1,4 +1,5 @@
 import { RouteProp } from '@react-navigation/native'
+import { ReactNativeFile } from 'apollo-upload-client'
 import React, { VFC, useEffect } from 'react'
 import styled from 'styled-components/native'
 import { NavParamList } from '../navigators/navigators'
@@ -7,6 +8,18 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { colors } from '../../colors'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { TouchableOpacity, ActivityIndicator } from 'react-native'
+import { gql, useMutation } from '@apollo/client'
+import { FEED_PHOTO } from '../fragments'
+import { uploadPhoto, uploadPhotoVariables } from '../__generated__/uploadPhoto'
+
+const UPLOAD_PHOTO_MUTATION = gql`
+  mutation uploadPhoto($file: Upload!, $caption: String) {
+    uploadPhoto(file: $file, caption: $caption) {
+      ...FeedPhoto
+    }
+  }
+  ${FEED_PHOTO}
+`
 
 const Container = styled.View`
   flex: 1;
@@ -50,6 +63,11 @@ interface IForm {
 }
 
 const UploadForm: VFC<IProps> = ({ route, navigation }) => {
+  const [uploadPhotoMutation, { loading, error }] = useMutation<
+    uploadPhoto,
+    uploadPhotoVariables
+  >(UPLOAD_PHOTO_MUTATION)
+
   const { register, handleSubmit, setValue } = useForm<IForm>()
 
   useEffect(() => {
@@ -57,9 +75,7 @@ const UploadForm: VFC<IProps> = ({ route, navigation }) => {
   }, [register])
 
   const HeaderRight = () => (
-    <TouchableOpacity
-      onPress={() => navigation.navigate('UploadForm', { file: chosenPhoto })}
-    >
+    <TouchableOpacity onPress={handleSubmit(onValid)}>
       <HeaderRightText>Next</HeaderRightText>
     </TouchableOpacity>
   )
@@ -70,12 +86,21 @@ const UploadForm: VFC<IProps> = ({ route, navigation }) => {
 
   useEffect(() => {
     navigation.setOptions({
-      headerRight: HeaderRightLoading,
-      headerLeft: () => null,
+      headerRight: loading ? HeaderRightLoading : HeaderRight,
+      ...(loading && { headerLeft: () => null }),
     })
-  }, [])
+  }, [loading])
 
-  const onValid: SubmitHandler<IForm> = ({ caption }) => {}
+  const onValid: SubmitHandler<IForm> = ({ caption }) => {
+    const file = new ReactNativeFile({
+      uri: route.params.file,
+      name: `1.jpeg`,
+      type: 'image/jpeg',
+    })
+    uploadPhotoMutation({ variables: { caption, file } })
+  }
+
+  console.log(error)
 
   return (
     <DismissKeyboard>
