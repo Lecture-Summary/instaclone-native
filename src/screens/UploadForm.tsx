@@ -8,7 +8,7 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { colors } from '../../colors'
 import { StackNavigationProp } from '@react-navigation/stack'
 import { TouchableOpacity, ActivityIndicator } from 'react-native'
-import { gql, useMutation } from '@apollo/client'
+import { ApolloCache, FetchResult, gql, useMutation } from '@apollo/client'
 import { FEED_PHOTO } from '../fragments'
 import { uploadPhoto, uploadPhotoVariables } from '../__generated__/uploadPhoto'
 
@@ -63,10 +63,32 @@ interface IForm {
 }
 
 const UploadForm: VFC<IProps> = ({ route, navigation }) => {
-  const [uploadPhotoMutation, { loading, error }] = useMutation<
+  const updateUploadPhoto = (
+    cache: ApolloCache<any>,
+    result: FetchResult<any>
+  ) => {
+    const {
+      data: { uploadPhoto },
+    } = result
+    if (uploadPhoto.id) {
+      cache.modify({
+        id: 'ROOT_QUERY',
+        fields: {
+          seeFeed(prev) {
+            return [uploadPhoto, ...prev]
+          },
+        },
+      })
+      navigation.navigate('Tabs')
+    }
+  }
+
+  const [uploadPhotoMutation, { loading }] = useMutation<
     uploadPhoto,
     uploadPhotoVariables
-  >(UPLOAD_PHOTO_MUTATION)
+  >(UPLOAD_PHOTO_MUTATION, {
+    update: updateUploadPhoto,
+  })
 
   const { register, handleSubmit, setValue } = useForm<IForm>()
 
@@ -99,8 +121,6 @@ const UploadForm: VFC<IProps> = ({ route, navigation }) => {
     })
     uploadPhotoMutation({ variables: { caption, file } })
   }
-
-  console.log(error)
 
   return (
     <DismissKeyboard>
