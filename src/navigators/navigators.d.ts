@@ -1,3 +1,5 @@
+import { seeRooms_seeRooms_users } from '../__generated__/seeRooms'
+
 export type NavParamList = {
   Welcome: undefined
   LogIn: { username?: string; password?: string } | undefined
@@ -17,6 +19,6 @@ export type NavParamList = {
   TakePhoto: undefined
   UploadForm: { file: string }
   Rooms: undefined
-  Room: undefined
+  Room: { id: number; talkingTo: seeRooms_seeRooms_users }
   Messages: undefined
 }
