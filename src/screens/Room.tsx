@@ -21,6 +21,7 @@ import { KeyboardAvoidingView } from 'react-native'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { sendMessage, sendMessageVariables } from '../__generated__/sendMessage'
 import useMe from '../hooks/useMe'
+import { Ionicons } from '@expo/vector-icons'
 
 const SEND_MESSAGE_MUTATION = gql`
   mutation sendMessage($payload: String!, $roomId: Int, $userId: Int) {
@@ -69,14 +70,21 @@ const Message = styled.Text`
   margin: 0px 10px;
 `
 const TextInput = styled.TextInput`
-  margin-bottom: 50px;
-  margin-top: 25px;
-  width: 95%;
   border: 1px solid rgba(255, 255, 255, 0.5);
   padding: 10px 20px;
   border-radius: 1000px;
   color: white;
+  width: 90%;
+  margin-right: 10px;
 `
+const InputContainer = styled.View`
+  width: 95%;
+  margin-bottom: 50px;
+  margin-top: 25px;
+  flex-direction: row;
+  align-items: center;
+`
+const SendButton = styled.TouchableOpacity``
 
 type RoomNavProp = StackNavigationProp<NavParamList, 'Room'>
 
@@ -182,7 +190,8 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
       <Message>{message?.payload}</Message>
     </MessageContainer>
   )
-
+  const messages = [...(data?.seeRoom?.messages ?? [])]
+  messages.reverse()
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: 'black' }}
@@ -191,21 +200,37 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
     >
       <ScreenLayout loading={loading}>
         <FlatList
-          style={{ width: '100%', paddingVertical: 10 }}
+          style={{ width: '100%', marginVertical: 10 }}
+          inverted
           ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
-          data={data?.seeRoom?.messages}
+          data={messages}
+          showsVerticalScrollIndicator={false}
           keyExtractor={(message) => '' + message?.id}
           renderItem={renderItem}
         />
-        <TextInput
-          placeholderTextColor='rgba(255, 255, 255, 0.5)'
-          placeholder='Write a message...'
-          returnKeyLabel='Send Message'
-          returnKeyType='send'
-          onChangeText={(text) => setValue('message', text)}
-          onSubmitEditing={handleSubmit(onValid)}
-          value={watch('message')}
-        />
+        <InputContainer>
+          <TextInput
+            placeholderTextColor='rgba(255, 255, 255, 0.5)'
+            placeholder='Write a message...'
+            returnKeyLabel='Send Message'
+            returnKeyType='send'
+            onChangeText={(text) => setValue('message', text)}
+            onSubmitEditing={handleSubmit(onValid)}
+            value={watch('message')}
+          />
+          <SendButton disabled={!Boolean(watch('message'))}>
+            <Ionicons
+              name='send'
+              color={
+                !Boolean(watch('message'))
+                  ? 'rgba(255, 255, 255, 0.5)'
+                  : 'white'
+              }
+              size={22}
+              onPress={handleSubmit(onValid)}
+            />
+          </SendButton>
+        </InputContainer>
       </ScreenLayout>
     </KeyboardAvoidingView>
   )
