@@ -1,4 +1,10 @@
-import { gql, useQuery } from '@apollo/client'
+import {
+  ApolloCache,
+  FetchResult,
+  gql,
+  useMutation,
+  useQuery,
+} from '@apollo/client'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
 import React, { VFC, useEffect } from 'react'
@@ -9,9 +15,12 @@ import {
   seeRoomVariables,
   seeRoom_seeRoom_messages,
 } from '../__generated__/seeRoom'
-import { FlatList, ListRenderItem } from 'react-native'
+import { FlatList, ListRenderItem, View } from 'react-native'
 import styled from 'styled-components/native'
 import { KeyboardAvoidingView } from 'react-native'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { sendMessage, sendMessageVariables } from '../__generated__/sendMessage'
+import useMe from '../hooks/useMe'
 
 const SEND_MESSAGE_MUTATION = gql`
   mutation sendMessage($payload: String!, $roomId: Int, $userId: Int) {
@@ -77,12 +86,79 @@ interface IProps {
   route: RoomRouteProp
 }
 
+interface IForm {
+  message: string
+}
+
 const Room: VFC<IProps> = ({ route, navigation }) => {
+  const { data: meData } = useMe()
+  const { register, setValue, handleSubmit, getValues } = useForm<IForm>()
+  const updateSendMessage = (
+    cache: ApolloCache<any>,
+    result: FetchResult<any>
+  ) => {
+    const {
+      data: {
+        sendMessage: { ok, id },
+      },
+    } = result
+    if (ok && meData) {
+      const { message } = getValues()
+      const messageObj = {
+        id,
+        payload: message,
+        user: {
+          username: meData.me?.username,
+          avatar: meData.me?.avatar,
+        },
+        read: true,
+        __typename: 'Message',
+      }
+      const messageFragment = cache.writeFragment({
+        fragment: gql`
+          fragment NewMessage on Message {
+            id
+            payload
+            user {
+              username
+              avatar
+            }
+            read
+          }
+        `,
+        data: messageObj,
+      })
+      cache.modify({
+        id: `Room:${route.params.id}`,
+        fields: {
+          messages(prev) {
+            return [messageFragment, ...prev]
+          },
+        },
+      })
+    }
+  }
+  const [sendMessageMutation, { loading: sendingMessage }] = useMutation<
+    sendMessage,
+    sendMessageVariables
+  >(SEND_MESSAGE_MUTATION, {
+    update: updateSendMessage,
+  })
   const { data, loading } = useQuery<seeRoom, seeRoomVariables>(ROOM_QUERY, {
     variables: {
       id: route.params.id,
     },
   })
+  const onValid: SubmitHandler<IForm> = ({ message }) => {
+    if (!sendingMessage) {
+      sendMessageMutation({
+        variables: { payload: message, roomId: route.params.id },
+      })
+    }
+  }
+  useEffect(() => {
+    register('message', { required: true })
+  }, [])
   useEffect(() => {
     navigation.setOptions({
       title: `${route.params.talkingTo.username}`,
@@ -93,7 +169,7 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
     | null
     | undefined = ({ item: message }) => (
     <MessageContainer
-      outGoing={message?.user.username !== route.params.talkingTo}
+      outGoing={message?.user.username !== route.params.talkingTo.username}
     >
       <Author>
         {message?.user.avatar && (
@@ -112,8 +188,8 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
     >
       <ScreenLayout loading={loading}>
         <FlatList
-          inverted
-          style={{ width: '100%' }}
+          style={{ width: '100%', paddingTop: 10 }}
+          ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
           data={data?.seeRoom?.messages}
           keyExtractor={(message) => '' + message?.id}
           renderItem={renderItem}
@@ -123,6 +199,8 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
           placeholder='Write a message...'
           returnKeyLabel='Send Message'
           returnKeyType='send'
+          onChangeText={(text) => setValue('message', text)}
+          onSubmitEditing={handleSubmit(onValid)}
         />
       </ScreenLayout>
     </KeyboardAvoidingView>
