@@ -34,6 +34,7 @@ const SEND_MESSAGE_MUTATION = gql`
 const ROOM_QUERY = gql`
   query seeRoom($id: Int!) {
     seeRoom(id: $id) {
+      id
       messages {
         id
         payload
@@ -92,7 +93,8 @@ interface IForm {
 
 const Room: VFC<IProps> = ({ route, navigation }) => {
   const { data: meData } = useMe()
-  const { register, setValue, handleSubmit, getValues } = useForm<IForm>()
+  const { register, setValue, handleSubmit, getValues, watch } =
+    useForm<IForm>()
   const updateSendMessage = (
     cache: ApolloCache<any>,
     result: FetchResult<any>
@@ -104,6 +106,7 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
     } = result
     if (ok && meData) {
       const { message } = getValues()
+      setValue('message', '')
       const messageObj = {
         id,
         payload: message,
@@ -132,7 +135,7 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
         id: `Room:${route.params.id}`,
         fields: {
           messages(prev) {
-            return [messageFragment, ...prev]
+            return [...prev, messageFragment]
           },
         },
       })
@@ -188,7 +191,7 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
     >
       <ScreenLayout loading={loading}>
         <FlatList
-          style={{ width: '100%', paddingTop: 10 }}
+          style={{ width: '100%', paddingVertical: 10 }}
           ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
           data={data?.seeRoom?.messages}
           keyExtractor={(message) => '' + message?.id}
@@ -201,6 +204,7 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
           returnKeyType='send'
           onChangeText={(text) => setValue('message', text)}
           onSubmitEditing={handleSubmit(onValid)}
+          value={watch('message')}
         />
       </ScreenLayout>
     </KeyboardAvoidingView>
