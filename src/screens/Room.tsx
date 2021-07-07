@@ -171,7 +171,7 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
     sendMessage,
     sendMessageVariables
   >(SEND_MESSAGE_MUTATION, {
-    update: updateSendMessage,
+    // update: updateSendMessage,
   })
   const { data, loading, subscribeToMore } = useQuery<
     seeRoom,
@@ -182,7 +182,7 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
     },
   })
   const client = useApolloClient()
-  const updateQuery: UpdateQueryFn<seeRoom, { id: number }, seeRoom> = (
+  const updateQuery: UpdateQueryFn<void, { id: number }, roomUpdates> = (
     prevQuery,
     options
   ) => {
@@ -191,8 +191,8 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
         data: { roomUpdates: message },
       },
     } = options
-    if (message.id) {
-      const messageFragment = client.cache.writeFragment({
+    if (message?.id) {
+      const incomingMessage = client.cache.writeFragment({
         fragment: gql`
           fragment NewMessage on Message {
             id
@@ -210,7 +210,17 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
         id: `Room:${route.params.id}`,
         fields: {
           messages(prev) {
-            return [...prev, messageFragment]
+            console.log('prev: ', prev)
+            console.log('incoming: ', incomingMessage)
+            const existingMessage = prev.find(
+              (aMessage) => aMessage.__ref === incomingMessage?.__ref
+            )
+            console.log('existingMessage: ', existingMessage)
+            if (existingMessage) {
+              console.log('exists!')
+              return prev
+            }
+            return [...prev, incomingMessage]
           },
         },
       })
