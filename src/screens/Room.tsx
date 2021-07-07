@@ -2,6 +2,7 @@ import {
   ApolloCache,
   FetchResult,
   gql,
+  useApolloClient,
   useMutation,
   useQuery,
   useSubscription,
@@ -24,15 +25,18 @@ import { sendMessage, sendMessageVariables } from '../__generated__/sendMessage'
 import useMe from '../hooks/useMe'
 import { Ionicons } from '@expo/vector-icons'
 import { roomUpdates, roomUpdatesVariables } from '../__generated__/roomUpdates'
+import { UpdateQueryFn } from '@apollo/client/core/watchQueryOptions'
 
 const ROOM_UPDATES = gql`
   subscription roomUpdates($id: Int!) {
     roomUpdates(id: $id) {
       id
       payload
+      user {
+        username
+        avatar
+      }
       read
-      createdAt
-      updatedAt
     }
   }
 `
@@ -177,6 +181,41 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
       id: route.params.id,
     },
   })
+  const client = useApolloClient()
+  const updateQuery: UpdateQueryFn<seeRoom, { id: number }, seeRoom> = (
+    prevQuery,
+    options
+  ) => {
+    const {
+      subscriptionData: {
+        data: { roomUpdates: message },
+      },
+    } = options
+    if (message.id) {
+      const messageFragment = client.cache.writeFragment({
+        fragment: gql`
+          fragment NewMessage on Message {
+            id
+            payload
+            user {
+              username
+              avatar
+            }
+            read
+          }
+        `,
+        data: message,
+      })
+      client.cache.modify({
+        id: `Room:${route.params.id}`,
+        fields: {
+          messages(prev) {
+            return [...prev, messageFragment]
+          },
+        },
+      })
+    }
+  }
   useEffect(() => {
     if (data?.seeRoom) {
       subscribeToMore({
@@ -184,6 +223,7 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
         variables: {
           id: route.params.id,
         },
+        updateQuery,
       })
     }
   }, [data])
