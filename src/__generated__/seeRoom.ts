@@ -23,6 +23,7 @@ export interface seeRoom_seeRoom_messages {
 
 export interface seeRoom_seeRoom {
   __typename: "Room";
+  id: number;
   messages: (seeRoom_seeRoom_messages | null)[] | null;
 }
 

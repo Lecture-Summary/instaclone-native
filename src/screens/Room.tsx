@@ -4,6 +4,7 @@ import {
   gql,
   useMutation,
   useQuery,
+  useSubscription,
 } from '@apollo/client'
 import { RouteProp } from '@react-navigation/native'
 import { StackNavigationProp } from '@react-navigation/stack'
@@ -22,6 +23,19 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { sendMessage, sendMessageVariables } from '../__generated__/sendMessage'
 import useMe from '../hooks/useMe'
 import { Ionicons } from '@expo/vector-icons'
+import { roomUpdates, roomUpdatesVariables } from '../__generated__/roomUpdates'
+
+const ROOM_UPDATES = gql`
+  subscription roomUpdates($id: Int!) {
+    roomUpdates(id: $id) {
+      id
+      payload
+      read
+      createdAt
+      updatedAt
+    }
+  }
+`
 
 const SEND_MESSAGE_MUTATION = gql`
   mutation sendMessage($payload: String!, $roomId: Int, $userId: Int) {
@@ -155,11 +169,24 @@ const Room: VFC<IProps> = ({ route, navigation }) => {
   >(SEND_MESSAGE_MUTATION, {
     update: updateSendMessage,
   })
-  const { data, loading } = useQuery<seeRoom, seeRoomVariables>(ROOM_QUERY, {
+  const { data, loading, subscribeToMore } = useQuery<
+    seeRoom,
+    seeRoomVariables
+  >(ROOM_QUERY, {
     variables: {
       id: route.params.id,
     },
   })
+  useEffect(() => {
+    if (data?.seeRoom) {
+      subscribeToMore({
+        document: ROOM_UPDATES,
+        variables: {
+          id: route.params.id,
+        },
+      })
+    }
+  }, [data])
   const onValid: SubmitHandler<IForm> = ({ message }) => {
     if (!sendingMessage) {
       sendMessageMutation({
